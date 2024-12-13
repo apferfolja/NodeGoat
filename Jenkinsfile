@@ -4,8 +4,6 @@ pipeline {
     tools {nodejs "node"}
     environment {
       SEMGREP_APP_TOKEN = credentials('semgrep-scan')
-    //   DOJO_HOST = 'http://localhost:9000'
-    //   DOJO_API_TOKEN = 'd56d4b30c4b8e877dc0a53fcd46994973f547e68'
     }
 
     stages {
@@ -59,16 +57,8 @@ pipeline {
                 
                 archiveArtifacts artifacts: 'scanresults/trufflehog-report.html', allowEmptyArchive: true
             }
-        }
-
-        // stage("OWASP Dependency Check"){
-        //     steps{
-        //         dependencyCheck additionalArguments: '--scan ./ ', odcInstallation: 'DP-Check'
-        //         dependencyCheckPublisher pattern: '**/dependency-check-report.xml' 
-        //         sh 'exit 0' 
-        //     }
-        // }
-    
+            
+        }    
     
         stage('Snyk Scan') {
             steps {
@@ -91,6 +81,7 @@ pipeline {
         }
         
 
+<<<<<<< HEAD
     //    stage('Dastardly Scan') {
     //         steps {
     //             echo 'Launch app...'
@@ -126,6 +117,30 @@ pipeline {
     //             }
     //         }
     //     }
+=======
+       stage('Dastardly Scan') {
+            steps {
+                echo 'Launch app...'
+                    sh 'docker-compose up --detach'
+                echo 'Dastardly Scanning...'
+                    sh '''
+                    docker run --network host --user $(id -u) -v ${WORKSPACE}:${WORKSPACE}:rw \
+                    -e BURP_START_URL=http://localhost:4000 \
+                    -e BURP_REPORT_FILE_PATH=${WORKSPACE}/dastardly-report.xml \
+                    public.ecr.aws/portswigger/dastardly:latest \
+                    '''
+                    sh 'exit 0'
+                
+                echo 'Dastardly Scanning Completed.'
+                
+            }
+            post {
+                always {
+                    junit allowEmptyResults: true, testResults: 'dastardly-report.xml', skipPublishingChecks: true
+                }
+            }
+        }
+>>>>>>> c066c47fd0179c4eaff3d5754d2b8396c3da832a
 
        
         stage('Deploy to PROD') {
