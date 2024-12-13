@@ -81,7 +81,7 @@ pipeline {
         }
         
 
-<<<<<<< HEAD
+
     //    stage('Dastardly Scan') {
     //         steps {
     //             echo 'Launch app...'
@@ -117,7 +117,7 @@ pipeline {
     //             }
     //         }
     //     }
-=======
+
        stage('Dastardly Scan') {
             steps {
                 echo 'Launch app...'
